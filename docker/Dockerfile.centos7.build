@@ -1,0 +1,58 @@
+########## OS ##########
+FROM centos:7
+
+RUN yum update -y && yum clean all
+RUN yum reinstall -y glibc-common
+########## OS ##########
+
+
+########## ENV ##########
+# Set the locale(en_US.UTF-8)
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Set app env
+ENV HOME /root
+########## ENV ##########
+
+
+########## MIDDLEWARE ##########
+WORKDIR /usr/local/src
+
+RUN yum install -y gcc gcc-c++ make openssl-devel ncurses-devel wget && yum clean all
+RUN yum install -y epel-release.noarch && yum clean all
+RUN wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+RUN rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+RUN yum install -y esl-erlang sudo wget git tar bzip2 incron vim && yum clean all
+########## MIDDLEWARE ##########
+
+
+########## ELIXIR ##########
+ENV ELIXIR_VERSION 1.5.2
+
+# Build Elixir
+RUN git clone https://github.com/elixir-lang/elixir.git
+WORKDIR /usr/local/src/elixir
+RUN git checkout refs/tags/v${ELIXIR_VERSION}
+RUN make clean install
+########## ELIXIR ##########
+
+########## NODE ##########
+RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | sudo bash -
+RUN yum install -y nodejs && yum clean all
+########## NODE ##########
+
+# Install hex
+RUN /usr/local/bin/mix local.hex --force && \
+    /usr/local/bin/mix local.rebar --force && \
+    /usr/local/bin/mix hex.info
+
+# Build Release
+ENV MIX_ENV prod
+RUN mkdir /app
+WORKDIR /app
+COPY . .
+
+RUN mix deps.get
+RUN mix release --env=prod

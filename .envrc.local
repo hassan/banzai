@@ -1,0 +1,11 @@
+export REPLACE_OS_VARS=true
+export BANZAI_TEST_DB_USER='postgres'
+export BANZAI_TEST_DB_PASS='mysecretpassword'
+export BANZAI_DB_USER='hassan'
+export BANZAI_DB_PASS=''
+export BANZAI_DB_NAME='banzai_dev'
+export BANZAI_DB_HOST='localhost'
+export SSL_KEY_PATH='/Users/hassan/projects/shared/server.key'
+export SSL_CERT_PATH='/Users/hassan/projects/shared/server.pem'
+
+# export PORT=4000
